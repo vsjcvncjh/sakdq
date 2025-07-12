@@ -76,12 +76,15 @@
   <script>
     const apiUrl = "aHR0cHM6Ly9maC53a2t4LmNuL0Nvcy9hcGkucGhw"; 
     const decodedApiUrl = atob(apiUrl);
+
+    // 获取 URL 参数
     function getQueryString(name) {
       const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
       const r = window.location.search.substr(1).match(reg);
       return r ? decodeURIComponent(r[2]) : null;
     }
 
+    // 更新进度条
     function updateProgress(percent) {
       const circle = document.querySelector('.progress');
       const text = document.getElementById('percent');
@@ -92,6 +95,7 @@
       text.innerText = `${percent}%`;
     }
 
+    // 平滑的进度更新
     function smoothProgressUpdate() {
       let fakeProgress = 0;
       const interval = setInterval(() => {
@@ -105,6 +109,7 @@
       }, 100);  
     }
 
+    // 使用 fetch 请求优化
     async function fetchData(url) {
       try {
         const response = await fetch(decodedApiUrl, {
@@ -119,7 +124,8 @@
           const data = await response.json();
           updateProgress(100);
           setTimeout(() => {
-            document.getElementById('content').innerHTML = data.html;  
+            // 替换页面内容
+            document.getElementById('content').innerHTML = data.html; 
           }, 300);
         }
       } catch (error) {
@@ -127,6 +133,7 @@
       }
     }
 
+    // 页面加载后触发
     window.onload = function() {
       const url = getQueryString("u");
       smoothProgressUpdate();
