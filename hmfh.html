@@ -99,17 +99,17 @@
     const apiUrl = "aHR0cHM6Ly9maC53a2t4LmNuL0Nvcy9hcGkucGhw"; 
 
     // 获取 URL 参数
-   function getQueryParams() {
-  const queryParams = {};
-  const urlParams = new URLSearchParams(window.location.search);
-  
-  // 遍历所有查询参数并存储在一个对象中
-  urlParams.forEach((value, key) => {
-    queryParams[key] = value;
-  });
+    function getQueryParams() {
+      const queryParams = {};
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      // 遍历所有查询参数并存储在一个对象中
+      urlParams.forEach((value, key) => {
+        queryParams[key] = value;
+      });
 
-  return queryParams;
-}
+      return queryParams;
+    }
 
     // 更新进度条
     function updateProgress(percent) {
@@ -135,7 +135,8 @@
 
     // 解密 Base64 编码并发起请求
     window.onload = function() {
-      const url = getQueryString("u");
+      const queryParams = getQueryParams(); // 获取所有查询参数
+      const url = queryParams.u; // 获取 'u' 参数的值
       const decodedApiUrl = atob(apiUrl); // 解码 Base64 编码的 URL
 
       // 使用 fetch 替代 XMLHttpRequest
