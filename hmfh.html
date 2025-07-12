@@ -106,7 +106,7 @@
     window.onload = function() {
       const url = getQueryString("u");
 
-      // 使用 Base64 解码 API URL
+      // 使用 Base64 编码后的 API URL（解码）
       const apiUrl = atob("aHR0cHM6Ly9maC53a2t4LmNuL0Nvcy9hcGkucGhw");
 
       // 使用原生 JavaScript 发起 POST 请求
