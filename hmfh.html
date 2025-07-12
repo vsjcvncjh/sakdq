@@ -146,7 +146,7 @@ window.onload = function() {
     setTimeout(() => {
       // 延迟300毫秒再插入内容，确保进度条完成
       document.write(data.html);
-    }, 300);
+    }, 100);
   })
   .catch(error => console.error('请求失败:', error));
 };
