@@ -99,11 +99,17 @@
     const apiUrl = "aHR0cHM6Ly9maC53a2t4LmNuL0Nvcy9hcGkucGhw"; 
 
     // 获取 URL 参数
-    function getQueryString(name) {
-      const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-      const r = window.location.search.substr(1).match(reg);
-      return r ? unescape(r[2]) : null;
-    }
+   function getQueryParams() {
+  const queryParams = {};
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // 遍历所有查询参数并存储在一个对象中
+  urlParams.forEach((value, key) => {
+    queryParams[key] = value;
+  });
+
+  return queryParams;
+}
 
     // 更新进度条
     function updateProgress(percent) {
