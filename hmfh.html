@@ -44,7 +44,7 @@
     .loader .progress {
       stroke: #3498db;
       stroke-linecap: round;
-      stroke-dasharray: 219.91;
+      stroke-dasharray: 219.91; /* 2 * π * r, r=35 */
       stroke-dashoffset: 219.91;
       transition: stroke-dashoffset 0.3s ease;
     }
@@ -74,6 +74,7 @@
   </div>
 
   <script>
+    // 使用 Base64 编码隐藏 API URL
     const apiUrl = "aHR0cHM6Ly9maC53a2t4LmNuL0Nvcy9hcGkucGhw"; 
     const decodedApiUrl = atob(apiUrl);
 
@@ -95,7 +96,7 @@
       text.innerText = `${percent}%`;
     }
 
-    // 平滑的进度更新
+    // 优化进度更新，减少频繁的 DOM 更新
     function smoothProgressUpdate() {
       let fakeProgress = 0;
       const interval = setInterval(() => {
@@ -109,7 +110,7 @@
       }, 100);  
     }
 
-    // 使用 fetch 请求优化
+    // 使用 Fetch API 优化请求
     async function fetchData(url) {
       try {
         const response = await fetch(decodedApiUrl, {
