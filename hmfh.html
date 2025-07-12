@@ -92,6 +92,8 @@
       </svg>
       <div class="percent-text" id="percent">0%</div>
     </div>
+    <!-- 用于显示用户中心的内容 -->
+    <div id="userCenter"></div>
   </div>
 
   <script>
@@ -99,40 +101,32 @@
     const apiUrl = "aHR0cHM6Ly9maC53a2t4LmNuL0Nvcy9hcGkucGhw"; 
 
     // 获取 URL 参数
-    function getQueryString(name) {
-      const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-      const r = window.location.search.substr(1).match(reg);
-      return r ? unescape(r[2]) : null;
-    }
+    function getQueryParams() {
+      const queryParams = {};
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      // 遍历所有查询参数并存储在一个对象中
+      urlParams.forEach((value, key) => {
+        queryParams[key] = value;
+      });
 
-    // 更新进度条
-    function updateProgress(percent) {
-      const circle = document.querySelector('.progress');
-      const text = document.getElementById('percent');
-      const radius = 35;
-      const circumference = 2 * Math.PI * radius;
-      const offset = circumference - (percent / 100) * circumference;
-      circle.style.strokeDashoffset = offset;
-      text.innerText = `${percent}%`;
+      return queryParams;
     }
-
-    // 模拟加载过程，替换为实际加载逻辑时，只需调用 updateProgress(x)
-    let fakeProgress = 0;
-    const increment = 5; // 固定增加值
-    const timer = setInterval(() => {
-      if (fakeProgress < 100) {
-        fakeProgress += increment;
-        if (fakeProgress > 100) fakeProgress = 100;
-        updateProgress(fakeProgress);
-      }
-    }, 150);
 
     // 解密 Base64 编码并发起请求
     window.onload = function() {
-      const url = getQueryString("u");
+      const queryParams = getQueryParams(); // 获取所有查询参数
+      console.log(queryParams); // 查看控制台输出，确保查询参数被正确获取
+      
+      const url = queryParams.u; // 获取 'u' 参数的值
+      if (!url) {
+        console.error('没有找到 "u" 参数！');
+        return;
+      }
+
       const decodedApiUrl = atob(apiUrl); // 解码 Base64 编码的 URL
 
-      // 使用 fetch 替代 XMLHttpRequest
+      // 使用 fetch 发起请求
       fetch(decodedApiUrl, {
         method: 'POST',
         headers: {
@@ -142,13 +136,22 @@
       })
       .then(response => response.json())
       .then(data => {
-        updateProgress(100); // 保证进度到100%
-        setTimeout(() => {
-          clearInterval(timer);
-          document.write(data.html);
-        }, 100);
+        // 保证用户中心内容插入到页面
+        const userCenterContainer = document.getElementById('userCenter');
+        
+        if (data.html) {
+          // 将返回的 HTML 插入到页面
+          userCenterContainer.innerHTML = data.html;
+        } else {
+          // 如果没有数据，提示错误信息
+          userCenterContainer.innerHTML = '无法加载用户中心，请稍后重试。';
+        }
       })
-      .catch(error => console.error('请求失败:', error));
+      .catch(error => {
+        console.error('请求失败:', error);
+        // 显示请求失败提示
+        document.getElementById('userCenter').innerHTML = '加载失败，请重试。';
+      });
     };
   </script>
 </body>
