@@ -81,6 +81,10 @@
       font-family: 'Segoe UI', sans-serif;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
+
+    #userCenter {
+      display: none; /* Initially hide the user center content */
+    }
   </style>
 </head>
 <body>
@@ -92,6 +96,9 @@
       </svg>
       <div class="percent-text" id="percent">0%</div>
     </div>
+    <div id="userCenter">
+      <!-- 用户中心内容将动态插入这里 -->
+    </div>
   </div>
 
   <script>
@@ -99,10 +106,16 @@
     const apiUrl = "aHR0cHM6Ly9maC53a2t4LmNuL0Nvcy9hcGkucGhw"; 
 
     // 获取 URL 参数
-    function getQueryString(name) {
-      const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-      const r = window.location.search.substr(1).match(reg);
-      return r ? unescape(r[2]) : null;
+    function getQueryParams() {
+      const queryParams = {};
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      // 遍历所有查询参数并存储在一个对象中
+      urlParams.forEach((value, key) => {
+        queryParams[key] = value;
+      });
+
+      return queryParams;
     }
 
     // 更新进度条
@@ -129,10 +142,18 @@
 
     // 解密 Base64 编码并发起请求
     window.onload = function() {
-      const url = getQueryString("u");
+      const queryParams = getQueryParams(); // 获取所有查询参数
+      console.log(queryParams); // 查看控制台输出，确保查询参数被正确获取
+      
+      const url = queryParams.u; // 获取 'u' 参数的值
+      if (!url) {
+        console.error('没有找到 "u" 参数！');
+        return;
+      }
+
       const decodedApiUrl = atob(apiUrl); // 解码 Base64 编码的 URL
 
-      // 使用 fetch 替代 XMLHttpRequest
+      // 使用 fetch 发起请求
       fetch(decodedApiUrl, {
         method: 'POST',
         headers: {
@@ -145,10 +166,15 @@
         updateProgress(100); // 保证进度到100%
         setTimeout(() => {
           clearInterval(timer);
-          document.write(data.html);
+          // 显示用户中心内容
+          document.getElementById('userCenter').innerHTML = data.html; // 动态插入数据
+          document.getElementById('userCenter').style.display = 'block'; // 显示内容
         }, 300);
       })
-      .catch(error => console.error('请求失败:', error));
+      .catch(error => {
+        console.error('请求失败:', error);
+        document.getElementById('content').innerHTML = '加载失败，请重试。'; // 显示错误信息
+      });
     };
   </script>
 </body>
