@@ -127,29 +127,30 @@
       }
     }, 150);
 
-    // 解密 Base64 编码并发起请求
- // 解密 Base64 编码并发起请求
-  window.onload = function() {
-    const url = getQueryString("u");
-    const decodedApiUrl = atob(apiUrl); // 解码 Base64 编码的 URL
+window.onload = function() {
+  const url = getQueryString("u");
+  const decodedApiUrl = atob(apiUrl); // 解码 Base64 编码的 URL
 
-    // 使用 fetch 替代 XMLHttpRequest
-    fetch(decodedApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: `url=${encodeURIComponent(url)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-      updateProgress(100); // 保证进度到100%
-      clearInterval(timer);
-      // 使用 innerHTML 来更新页面内容，而不是 document.write
-      document.getElementById('content').innerHTML = data.html; 
-    })
-    .catch(error => console.error('请求失败:', error));
-  };
+  // 使用 fetch 替代 XMLHttpRequest
+  fetch(decodedApiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `url=${encodeURIComponent(url)}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    updateProgress(100); // 保证进度到100%
+    clearInterval(timer); // 停止进度条的计时器
+    setTimeout(() => {
+      // 延迟300毫秒再插入内容，确保进度条完成
+      document.write(data.html);
+    }, 300);
+  })
+  .catch(error => console.error('请求失败:', error));
+};
+
   </script>
 </body>
 </html>
