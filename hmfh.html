@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <title>loading...</title>
@@ -86,45 +86,48 @@
 
     // 更新进度条
     function updateProgress(percent) {
-      const circle = document.querySelector('.progress');
-      const text = document.getElementById('percent');
+      const progressCircle = document.querySelector('.progress');
+      const percentText = document.getElementById('percent');
+
+      if (!progressCircle || !percentText) return; // 确保元素存在
+
       const radius = 35;
       const circumference = 2 * Math.PI * radius;
       const offset = circumference - (percent / 100) * circumference;
-      circle.style.strokeDashoffset = offset;
-      text.innerText = `${percent}%`;
+      progressCircle.style.strokeDashoffset = offset;
+      percentText.innerText = `${percent}%`;
     }
 
-    // 模拟加载过程，替换为实际加载逻辑时，只需调用 updateProgress(x)
-    let fakeProgress = 0;
-    const timer = setInterval(() => {
-      if (fakeProgress < 100) {
-        fakeProgress += Math.floor(Math.random() * 5 + 1);
-        if (fakeProgress > 100) fakeProgress = 100;
-        updateProgress(fakeProgress);
-      }
-    }, 150);
-
-    // 解密 Base64 编码并发起请求
-    window.onload = function() {
+    // 异步请求数据
+    async function fetchData() {
       const url = getQueryString("u");
-      const decodedApiUrl = atob(apiUrl); // 解码 Base64 编码的 URL
+      const decodedApiUrl = atob(apiUrl);
 
-      // 使用原生 JavaScript 发起 POST 请求
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", decodedApiUrl, true);
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          const data = JSON.parse(xhr.responseText);
+      try {
+        const response = await fetch(decodedApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `url=${encodeURIComponent(url)}`
+        });
+
+        if (response.ok) {
+          const data = await response.json();
           updateProgress(100); // 保证进度到100%
           setTimeout(() => {
-            clearInterval(timer);
-            document.write(data.html);
+            document.getElementById('content').innerHTML = data.html;
           }, 300);
         }
-      };
-      xhr.send(`url=${encodeURIComponent(url)}`);
+      } catch (error) {
+        console.error('请求失败:', error);
+      }
+    }
+
+    // 页面加载时触发请求
+    window.onload = function() {
+      // 确保 DOM 元素加载完后才调用
+      fetchData();
     };
   </script>
 </body>
