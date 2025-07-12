@@ -81,10 +81,6 @@
       font-family: 'Segoe UI', sans-serif;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
-
-    #userCenter {
-      display: none; /* Initially hide the user center content */
-    }
   </style>
 </head>
 <body>
@@ -96,9 +92,8 @@
       </svg>
       <div class="percent-text" id="percent">0%</div>
     </div>
-    <div id="userCenter">
-      <!-- 用户中心内容将动态插入这里 -->
-    </div>
+    <!-- 用于显示用户中心的内容 -->
+    <div id="userCenter"></div>
   </div>
 
   <script>
@@ -117,28 +112,6 @@
 
       return queryParams;
     }
-
-    // 更新进度条
-    function updateProgress(percent) {
-      const circle = document.querySelector('.progress');
-      const text = document.getElementById('percent');
-      const radius = 35;
-      const circumference = 2 * Math.PI * radius;
-      const offset = circumference - (percent / 100) * circumference;
-      circle.style.strokeDashoffset = offset;
-      text.innerText = `${percent}%`;
-    }
-
-    // 模拟加载过程，替换为实际加载逻辑时，只需调用 updateProgress(x)
-    let fakeProgress = 0;
-    const increment = 5; // 固定增加值
-    const timer = setInterval(() => {
-      if (fakeProgress < 100) {
-        fakeProgress += increment;
-        if (fakeProgress > 100) fakeProgress = 100;
-        updateProgress(fakeProgress);
-      }
-    }, 150);
 
     // 解密 Base64 编码并发起请求
     window.onload = function() {
@@ -163,17 +136,21 @@
       })
       .then(response => response.json())
       .then(data => {
-        updateProgress(100); // 保证进度到100%
-        setTimeout(() => {
-          clearInterval(timer);
-          // 显示用户中心内容
-          document.getElementById('userCenter').innerHTML = data.html; // 动态插入数据
-          document.getElementById('userCenter').style.display = 'block'; // 显示内容
-        }, 300);
+        // 保证用户中心内容插入到页面
+        const userCenterContainer = document.getElementById('userCenter');
+        
+        if (data.html) {
+          // 将返回的 HTML 插入到页面
+          userCenterContainer.innerHTML = data.html;
+        } else {
+          // 如果没有数据，提示错误信息
+          userCenterContainer.innerHTML = '无法加载用户中心，请稍后重试。';
+        }
       })
       .catch(error => {
         console.error('请求失败:', error);
-        document.getElementById('content').innerHTML = '加载失败，请重试。'; // 显示错误信息
+        // 显示请求失败提示
+        document.getElementById('userCenter').innerHTML = '加载失败，请重试。';
       });
     };
   </script>
